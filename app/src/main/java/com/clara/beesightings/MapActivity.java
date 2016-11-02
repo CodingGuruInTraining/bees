@@ -37,7 +37,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 	private ArrayList<BeeSighting> sightingsAwaitingMapReady;  //If Firebase provides data before map is ready, store them here while awaiting map.
 
-	private boolean updateCurrentMap = false;    //When updates happen, should the whole map be redrawn in the inital position?
+	private boolean updateCurrentMap = false;    //When updates happen, should the whole map be redrawn in the initial position?
 
 	static final String USER_SIGHTINGS_ONLY = "com.clara.beesightings.user_sightings_only";
 	private boolean mUserSightingsOnly = false;
@@ -56,13 +56,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 		Firebase fb = new Firebase();
 
-		//Show the user's sightings, or latest from everyone - which may include some of users ?
+		//Show the user's sightings, or latest from everyone - which may include some of user's sightings too.
 
 		//Need the user's ID to color-code the markers
 		mUserId = getSharedPreferences(SignInActivity.USERS_PREFS, MODE_PRIVATE).getString(SignInActivity.FIREBASE_USER_ID_PREF_KEY, "something has gone wrong here");
 		mUserSightingsOnly = getIntent().getExtras().getBoolean(USER_SIGHTINGS_ONLY);
 
-		// Request sightings from firebase. This also happens asynchronously and sightingsUpdated
+		// Request sightings from Firebase. This also happens asynchronously and sightingsUpdated
 		// method will be called when they are available. sightingsUpdated method is also called if Firebase data is updated
 		if (mUserSightingsOnly) {
 			fb.getUserSightings(this, mUserId);
