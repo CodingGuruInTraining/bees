@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.clara.beesightings.firebase.BeeSighting;
@@ -34,6 +35,7 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 	Button mThisUserReportsListButton;
 	Button mThisUserReportsMapButton;
 	Button mAllUserReportMapButton;
+	ProgressBar getLocationAndUploadProgress;
 
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -54,6 +56,8 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 		mThisUserReportsListButton = (Button) findViewById(R.id.this_users_reports_list_button);
 		mThisUserReportsMapButton = (Button) findViewById(R.id.this_users_reports_map_button);
 		mAllUserReportMapButton = (Button) findViewById(R.id.map_all_users_reports_button);
+		getLocationAndUploadProgress = (ProgressBar) findViewById(R.id.uploading_sighting);
+
 
 		mSubmitReportButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -103,13 +107,24 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 	private void submitReport() {
 
 		String beeLoc = mBeeLocationDescriptionET.getText().toString();
-		String beeNumStr = mBeeNumberET.getText().toString();
+		int beeCount = -1;
+
+		try {
+			beeCount = Integer.parseInt(mBeeNumberET.getText().toString());
+		} catch (NumberFormatException nfe) {
+			beeCount = -1;
+		}
 
 		//Validate, if either failed show error and return.
-		if (beeLoc.length() == 0 || !beeNumStr.matches("^\\d+$"))  {
+
+		if (beeLoc.isEmpty() || beeCount < 0)  {
 			Toast.makeText(this, "Please enter both a number and description", Toast.LENGTH_LONG).show();
 			return;
 		}
+
+		getLocationAndUploadProgress.setVisibility(View.VISIBLE);
+		mSubmitReportButton.setText(R.string.submitting);
+		mSubmitReportButton.setEnabled(false);
 
 		checkLocationAvailable();   //Just in case the user turned location off... This causes a Dialog to turn it on again
 
@@ -118,10 +133,12 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 
 	}
 
+
 	/* This is the callback from LocationUtils.getLocation() */
 
 	@Override
 	public void notifyLocationResult(Location location) {
+
 		//Now can save bee sighting
 
 		if (location == null) {
@@ -164,8 +181,16 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 			Firebase fb = new Firebase();
 			fb.addSighting(currentSighting, this, ACTION_ADD_NEW);
 			clearCurrentSightingInfo();
-			Toast.makeText(this, "Sending report to Firebase...", Toast.LENGTH_LONG).show();
+
 		}
+	}
+
+	private void enableSubmit() {
+		// re-enable button, hide progress bar.
+		getLocationAndUploadProgress.setVisibility(View.INVISIBLE);  // Turn off progress bar
+		mSubmitReportButton.setText(getString(R.string.submit_report));
+		mSubmitReportButton.setEnabled(true);
+
 	}
 
 
@@ -189,8 +214,9 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 		} else {
 			//Failure - the user may have no internet connection, or it could be some error with the code.
 			Toast.makeText(this, "An error occurred sending your report. Please check your internet connection?", Toast.LENGTH_LONG).show();
-
 		}
+
+		enableSubmit();
 	}
 
 
@@ -215,7 +241,6 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 
 		if (!locationPermission) {
 			requestLocationPermission();
-			return;
 		}
 	}
 
@@ -229,6 +254,7 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 	private void requestLocationPermission() {
 		ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
 	}
+
 
 	private void sendUserToSettings() {
 		//Stack overflow http://stackoverflow.com/questions/10311834/how-to-check-if-location-services-are-enabled
@@ -252,6 +278,7 @@ public class BeeSightingReportActivity extends AppCompatActivity implements Fire
 
 		dialog.show();
 	}
+
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

@@ -16,9 +16,9 @@ import android.util.Log;
 
  TODO TEST on devices and under various conditions
 
- FIXME Start app in emulator API 24. Turn off location, then future location
- requests time out; until the Emulator is sent a new mock location.
- This behavior was not observed on real device API 21 - should test on others.
+ Emulator issue: location requests timing out. Need to open the extended controls and send a new
+ mock location before the location is able to be determined by the app.
+ This behavior was not observed on real device API 21 - TODO test on other devices.
 
  TODO Should notify user on timeout? This would happen if a real device had location enabled and permission was granted, but had a poor GPS signal
 

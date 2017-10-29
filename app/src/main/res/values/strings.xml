@@ -13,4 +13,6 @@
     <string name="showing_d_sightings">Showing %d sightings</string>
     <string name="tap_to_edit_long_press_to_delete">Tap to edit, long-press to delete</string>
     <string name="loading_sightings_msg">Loading your sightings...</string>
+    <string name="submitting">Submitting...</string>
+    <string name="uploading">Uploading to Firebase</string>
 </resources>

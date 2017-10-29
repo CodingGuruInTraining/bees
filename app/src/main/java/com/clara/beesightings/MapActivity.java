@@ -104,11 +104,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 			//remove any old markers. This also resets the camera to initial position, which is why the CameraPosition is saved.
 			map.clear();
 
-			if (!updateCurrentMap) {
-				//Move camera to most recent sighting
+			if (!updateCurrentMap && sightings.size() >= 1) {
+				//Move camera to most recent sighting, if there is one
+
 				BeeSighting mostRecent = sightings.get(sightings.size() - 1);
 				CameraUpdate update = CameraUpdateFactory.newLatLngZoom(mostRecent.getLatLng(), map.getMinZoomLevel());
 				map.moveCamera(update);
+
 
 			} else {
 				// restore camera to the position it was at
